@@ -1,0 +1,15 @@
+待办事项：
+- [ ] windows上报脚本ping和丢包，以及删除旧进程问题
+- [ ] 新增一个仓库，用于纯前端项目开发，制作演示主题
+- [ ] 远程模式，访问后台多一个下拉选择，用于选择不同的 API 基础 URL，登录框以及登录后右上角选择，切换后清空登录信息刷新页面
+- [x] 前端项目config.json，新增title,backgroundImage字段，前端根据配置标题和背景图片。
+- [x] 验证Websocket修改后的DO占用效果（daily Durable Objects free tier limit of 101562500000 duration）
+- [x] build去掉根据.env自动生成config.json文件，而且不能删除config.json文件
+- [x] metrics_history删除ram字段，前端修改采用ram_used/ram_total计算ram占用率,保留两位小数百分比。
+- [x] metrics_history删除disk字段，前端应该已修改。
+- [x] metrics_history，country改成region字段，不需要数据迁移，直接新增字段。数据上报，入库到region字段，但返回一定要是region字段。
+- [x] install.sh install-alpine.sh install-openwrt.sh去掉这两个多余字段上报
+- [x] schema.js, updateDatabase.js去掉这两个多余字段
+- [x] 加入一个版本号字段 -- 后期逻辑再理一下
+- [x] 前端支持多apiBase, 并且同时调用并输出，如果多个，/admin前端关闭入口
+- [x] 流量包用户，有流量限制，不需要每月重置，需要调整前端显示，以及调整探针逻辑。
