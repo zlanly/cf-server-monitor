@@ -21,6 +21,15 @@ export async function handleServerAPI(request, env, sys) {
   
   const latestMetrics = await getLatestMetrics(env.DB, id);
   mergeMetricsIntoServer(server, latestMetrics);
+
+  // 与列表接口保持一致：根据最新指标时间戳计算在线状态（5 分钟窗口）
+  if (latestMetrics) {
+    server.is_online = (Date.now() - latestMetrics.timestamp) < 300000;
+  } else {
+    server.is_online = false;
+  }
+  server.last_updated = latestMetrics ? latestMetrics.timestamp : 0;
+
   server.sysConfig = {
     show_long_history: sys.show_long_history === 'true'
   };
@@ -53,7 +62,10 @@ export async function handleServersAPI(request, env, sys) {
       isOnline = (now - latestMetrics.timestamp) < 300000;
       mergeMetricsIntoServer(server, latestMetrics);
     }
-    
+
+    // 与详情接口保持一致：把在线状态显式挂到每台服务器上，供前端直接消费
+    server.is_online = isOnline;
+
     if (isOnline) {
       globalOnline++;
       globalSpeedIn += parseFloat(server.net_in_speed) || 0;

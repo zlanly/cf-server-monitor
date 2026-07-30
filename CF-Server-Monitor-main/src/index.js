@@ -19,6 +19,12 @@ import { MetricsBroadcaster as _MetricsBroadcaster }
 
 export class MetricsBroadcaster extends _MetricsBroadcaster {}
 
+// Durable Objects: SSH Agent 反向隧道中继
+import { SSHAgentRelay as _SSHAgentRelay }
+  from './durable/SSHAgentRelay.js';
+
+export class SSHAgentRelay extends _SSHAgentRelay {}
+
 async function getEncryptionKey(env, sys) {
   let secret = (sys && sys.jwt_secret) || env.TURNSTILE_SECRET_KEY || env.API_SECRET || 'default_secret_key_for_turnstile_encryption';
   secret += '_turnstile';

@@ -27,15 +27,26 @@ name = "METRICS_BROADCASTER"
 class_name = "MetricsBroadcaster"
 script_name = "cf-server-monitor"
 
+[[durable_objects.bindings]]
+name = "SSH_RELAY"
+class_name = "SSHAgentRelay"
+script_name = "cf-server-monitor"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["MetricsBroadcaster"]
 
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["SSHAgentRelay"]
+
 [vars]
+# 监控上报鉴权密钥（/update 接口比对 secret === API_SECRET）
+API_SECRET = "dev_preview_secret_change_me"
 # SSH Agent 反向隧道鉴权密钥（与 agent 连接时携带的 token 比对）
-AGENT_SECRET = ""
+AGENT_SECRET = "dev_agent_token_change_me"
 
 # 开发服务器配置
 [dev]
 port = 8787
-local_protocol = "https"
+local_protocol = "http"
