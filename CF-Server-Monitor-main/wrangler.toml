@@ -1,0 +1,41 @@
+# Cloudflare Workers 配置，线上已由deploy.yml接管，这里仅供本地测试
+name = "cf-server-monitor"
+main = "src/index.js"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# 定时任务配置（UTC）
+# - 每分钟：执行离线节点检测
+# - 每小时：合并执行其他定时任务（每月1号数据清理、每月8号清理旧表、每天12点服务器到期检测）
+# - 注意同步修改deploy和index.js scheduled函数里面的值
+[triggers]
+crons = ["*/1 * * * *", "0 * * * *"]
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "server-monitor-db"
+
+# Durable Objects：实时指标广播中心
+# 注意：首次部署前需要执行 `wrangler durable-object create MetricsBroadcaster --class MetricsBroadcaster`
+# 或者在部署后，wrangler 会自动创建对应的 DO namespace。
+[[durable_objects.bindings]]
+name = "METRICS_BROADCASTER"
+class_name = "MetricsBroadcaster"
+script_name = "cf-server-monitor"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MetricsBroadcaster"]
+
+[vars]
+# SSH Agent 反向隧道鉴权密钥（与 agent 连接时携带的 token 比对）
+AGENT_SECRET = ""
+
+# 开发服务器配置
+[dev]
+port = 8787
+local_protocol = "https"

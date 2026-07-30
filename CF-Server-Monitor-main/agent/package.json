@@ -1,0 +1,10 @@
+{
+  "name": "cf-monitor-agent",
+  "version": "1.0.0",
+  "description": "CF-Server-Monitor SSH Agent - uses ssh2 library for SSH connections",
+  "main": "ssh-agent.js",
+  "dependencies": {
+    "ws": "^8.16.0",
+    "ssh2": "^1.15.0"
+  }
+}
