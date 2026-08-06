@@ -132,7 +132,9 @@ export default {
       this.statusClass = 'connecting';
 
       const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const token = localStorage.getItem('auth_token') || '';
+      // 登录 token 实际存在 localStorage['jwt_token']（见 utils/api.js 的 login()），
+      // 此前误读 'auth_token'（永远为空）→ 服务端收不到 JWT → 401 → 浏览器 1006。
+      const token = localStorage.getItem('jwt_token') || localStorage.getItem('auth_token') || '';
       const wsUrl = `${wsProtocol}//${location.host}/api/ssh-terminal?type=terminal&server_id=${encodeURIComponent(this.serverId)}&token=${encodeURIComponent(token)}`;
 
       this.ws = new WebSocket(wsUrl);
