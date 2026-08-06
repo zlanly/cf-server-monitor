@@ -19,7 +19,9 @@ const routes = [
   {
     path: '/ssh/:id',
     name: 'SSH',
-    component: () => import('../views/SSHTerminal.vue')
+    component: () => import('../views/SSHTerminal.vue'),
+    // 把路由参数 id 映射为 SSHTerminal.vue 期望的 serverId prop，否则组件内 serverId 为 undefined
+    props: (route) => ({ serverId: route.params.id })
   }
 ]
 
