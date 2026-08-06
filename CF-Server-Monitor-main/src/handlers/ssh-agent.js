@@ -10,7 +10,7 @@
  *      改走 DO 后本地也能正常代理（DO 的 WebSocket 由 Miniflare 正常处理）。
  */
 
-import { checkAuth, simpleAuthResponse } from '../middleware/auth.js';
+import { checkAuthOrQuery, simpleAuthResponse } from '../middleware/auth.js';
 
 export async function handleSSHAgentWebSocket(request, env, sys) {
   const url = new URL(request.url);
@@ -24,7 +24,8 @@ export async function handleSSHAgentWebSocket(request, env, sys) {
       return new Response('Unauthorized', { status: 401 });
     }
   } else if (type === 'terminal') {
-    const isLoggedIn = await checkAuth(request, env, sys);
+    // 浏览器 WS 升级无法带 Authorization 头，JWT 在 ?token= 上 → 用 checkAuthOrQuery
+    const isLoggedIn = await checkAuthOrQuery(request, env, sys);
     if (!isLoggedIn) {
       return simpleAuthResponse();
     }

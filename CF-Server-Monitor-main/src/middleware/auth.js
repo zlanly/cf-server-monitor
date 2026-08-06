@@ -97,12 +97,39 @@ export async function checkAuth(request, env, sys) {
   }
 
   const secret = getJwtSecret(env, sys);
-  
+
   try {
     const payload = await verifyJwt(token, secret);
     return payload !== null;
   } catch (e) {
     console.error('Auth check error:', e);
+    return false;
+  }
+}
+
+/**
+ * 鉴权（兼容 WebSocket 场景）。
+ *
+ * 浏览器在发起 WebSocket 升级请求时无法自定义请求头（只能带 query 参数 / cookie），
+ * 因此前端把 JWT 放在 `?token=` 上传递。这里在「Authorization 头」校验失败后，
+ * 再尝试用 `?token=` 查询参数里的 JWT 做一次 HMAC 校验，从而让终端类 WS 能正常升级。
+ */
+export async function checkAuthOrQuery(request, env, sys) {
+  // 1) 优先走标准 Authorization: Bearer 头（普通 HTTP 接口仍走这里）
+  const viaHeader = await checkAuth(request, env, sys);
+  if (viaHeader) return true;
+
+  // 2) 兜底：从 query 参数读取 JWT（浏览器 WS 升级专用）
+  try {
+    const url = new URL(request.url);
+    const token = url.searchParams.get('token');
+    if (!token) return false;
+
+    const secret = getJwtSecret(env, sys);
+    const payload = await verifyJwt(token, secret);
+    return payload !== null;
+  } catch (e) {
+    console.error('Auth(checkAuthOrQuery) error:', e);
     return false;
   }
 }
